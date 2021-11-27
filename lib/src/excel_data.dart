@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'extension.dart';
 
 class ExcelCell {
   Widget? child;
   String? content;
   TextStyle? style;
+  TextAlign align;
   ExcelCell({
     this.child,
     this.content,
     this.style,
+    this.align = TextAlign.center,
   }) : assert(
           (child == null || content == null),
-          'Need at least child or content on Excel Object',
+          'Need atleast child or content on Excel Object',
         );
+  factory ExcelCell.empty() {
+    return ExcelCell(child: const SizedBox());
+  }
 }
 
 class ExcelRow {
@@ -73,14 +79,5 @@ double getCellWidth(ExcelCell cell) {
   final content = cell.content;
   final style = cell.style;
   assert(content != null, 'Widget child is not support for dynamic with');
-  return _textSize(content!, style).width;
-}
-
-Size _textSize(String text, TextStyle? style) {
-  final TextPainter textPainter = TextPainter(
-      text: TextSpan(text: text, style: style),
-      maxLines: 1,
-      textDirection: TextDirection.ltr)
-    ..layout(minWidth: 0, maxWidth: double.infinity);
-  return textPainter.size;
+  return content!.textSize(style).width;
 }

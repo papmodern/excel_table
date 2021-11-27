@@ -1,16 +1,31 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:excel_table/excel_table.dart';
+
+import 'components/locked_header.dart';
+import 'components/locked_row.dart';
+import 'components/scrollable_header.dart';
+import 'components/scrollable_row.dart';
 
 class ExcelTable extends StatefulWidget {
   final ExcelData data;
   final int lockedColumn;
-  final List<String> header;
+  final List<Widget> headers;
+  final List<double> minColumnsWidth;
+  final ScrollController? scrollController;
+  final TextStyle? headerStyle;
+  final EdgeInsets? padding;
+  final Color? dividerColor;
   const ExcelTable({
     Key? key,
     required this.data,
+    required this.headers,
+    required this.minColumnsWidth,
     this.lockedColumn = 1,
-    required this.header,
+    this.scrollController,
+    this.headerStyle,
+    this.padding,
+    this.dividerColor,
   }) : super(key: key);
 
   @override
@@ -19,104 +34,191 @@ class ExcelTable extends StatefulWidget {
 
 class _ExcelTableState extends State<ExcelTable> {
   late List<double> columnWidth;
+  late ScrollController scrollController;
+  bool atBottom = false, atTop = true;
 
   @override
   void initState() {
-    columnWidth = widget.data.columnsWidth;
+    columnWidth = _getColWith();
+    scrollController = widget.scrollController ?? ScrollController();
+    scrollController.addListener(() => onScroll());
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant ExcelTable oldWidget) {
-    print('didUpdateWidget');
-    columnWidth = widget.data.columnsWidth;
+    columnWidth = _getColWith();
     super.didUpdateWidget(oldWidget);
   }
 
   @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  List<double> _getColWith() {
+    final headersWidth = widget.minColumnsWidth;
+    final contentsWidth = widget.data.columnsWidth;
+
+    assert(headersWidth.length == contentsWidth.length,
+        'Headers and contents is not equal length');
+    for (int i = 0; i < contentsWidth.length; i++) {
+      final h = headersWidth[i];
+      final c = contentsWidth[i];
+      if (h > c) {
+        contentsWidth[i] = h;
+      }
+    }
+    return contentsWidth;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final rowLength = widget.data.listRow.length;
+    final lockedColumn = widget.lockedColumn;
     return Row(
       children: [
-        Container(
-          width: 200,
-          height: 10,
-          color: Colors.red,
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+        if (lockedColumn > 0)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: List.generate(widget.data.listRow.length, (index) {
+              children: List.generate(rowLength, (index) {
                 final excelRow = widget.data.listRow[index];
-                return ExcelRowWidget(
-                    row: excelRow,
-                    startCol: widget.lockedColumn,
-                    columnWidth: columnWidth);
-              }),
+                return LockedExcelRowWidget(
+                  row: excelRow,
+                  end: lockedColumn,
+                  columnWidth: columnWidth,
+                  padding: widget.padding,
+                  onTapped: (row) => _onTappedRow(row),
+                );
+              })
+                ..insert(
+                    0,
+                    LockedHeaderWidget(
+                      listHeaders: widget.headers,
+                      columnWidth: columnWidth,
+                      padding: widget.padding,
+                      end: lockedColumn,
+                    )),
             ),
+          ),
+        Expanded(
+          child: Stack(
+            children: [
+              MediaQuery.removePadding(
+                context: context,
+                removeBottom: true,
+                child: Scrollbar(
+                  controller: scrollController,
+                  isAlwaysShown: true,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const ClampingScrollPhysics(),
+                      controller: scrollController,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(rowLength, (index) {
+                          final excelRow = widget.data.listRow[index];
+                          return ScrollableExcelRowWidget(
+                            row: excelRow,
+                            start: lockedColumn,
+                            columnWidth: columnWidth,
+                            padding: widget.padding,
+                            onTapped: (row) => _onTappedRow(row),
+                          );
+                        })
+                          ..insert(
+                              0,
+                              ScrollableHeaderWidget(
+                                listHeaders: widget.headers,
+                                columnWidth: columnWidth,
+                                padding: widget.padding,
+                                start: lockedColumn,
+                              )),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 12,
+                child: Visibility(
+                  visible: !atTop,
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [Colors.black26, Colors.transparent],
+                      )),
+                      width: 10,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 12,
+                  child: Visibility(
+                    visible: !atBottom,
+                    child: IgnorePointer(
+                      ignoring: true,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            Color(0x00FFFFFF),
+                            Colors.white54,
+                          ],
+                        )),
+                        width: 20,
+                      ),
+                    ),
+                  ))
+            ],
           ),
         ),
       ],
     );
   }
-}
 
-class ExcelRowWidget extends StatelessWidget {
-  const ExcelRowWidget({
-    Key? key,
-    required this.row,
-    required this.columnWidth,
-    this.startCol = 0,
-  }) : super(key: key);
-  final List<double> columnWidth;
-  final ExcelRow row;
-  final int startCol;
-
-  @override
-  Widget build(BuildContext context) {
-    final showSubRow = row.showSubRow;
-    if (showSubRow) {
-      return Column();
-    }
-    return _ExcelRowWidget(
-      listCell: row.listCell,
-      columnWidth: columnWidth,
-      startCol: startCol,
-    );
+  _onTappedRow(ExcelRow row) {
+    setState(() {
+      row.showSubRow = !row.showSubRow;
+    });
   }
-}
 
-class _ExcelRowWidget extends StatelessWidget {
-  const _ExcelRowWidget({
-    Key? key,
-    required this.listCell,
-    required this.columnWidth,
-    required this.startCol,
-  }) : super(key: key);
-  final List<double> columnWidth;
-  final int startCol;
-  final List<ExcelCell> listCell;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(listCell.length - startCol, (index) {
-        final cell = listCell[index + startCol];
-        final width = columnWidth[index + startCol];
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: Container(
-            color: Colors.green,
-            width: width,
-            child: cell.child ??
-                Text(
-                  cell.content!,
-                  style: cell.style,
-                ),
-          ),
-        );
-      }),
-    );
+  onScroll() {
+    if (scrollController.position.atEdge) {
+      if (scrollController.position.pixels == 0) {
+        setState(() {
+          atTop = true;
+          atBottom = false;
+        });
+      } else {
+        setState(() {
+          atBottom = true;
+          atTop = false;
+        });
+      }
+    } else {
+      if (atTop == true || atBottom == true) {
+        setState(() {
+          atTop = false;
+          atBottom = false;
+        });
+      }
+    }
   }
 }
