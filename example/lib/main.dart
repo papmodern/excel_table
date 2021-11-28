@@ -19,34 +19,34 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     final excelRow1 = ExcelRow(listCell: [
-      ExcelCell(content: "PVBF", align: TextAlign.start),
+      ExcelCell(content: "Row 1", align: TextAlign.start),
       ExcelCell(content: "40%"),
-      ExcelCell(content: "10.020.000đ"),
-      ExcelCell(content: "18.890đ"),
+      ExcelCell(content: "10.000.000"),
+      ExcelCell(content: "10.000"),
       ExcelCell(content: "01/02/2021"),
     ], listSubRow: [
       ExcelRow(
         listCell: [
           ExcelCell.empty(),
           ExcelCell(content: "30%"),
-          ExcelCell(content: "10.020.000đ"),
-          ExcelCell(content: "18.890đ"),
+          ExcelCell(content: "4.000.000"),
+          ExcelCell(content: "10.000"),
           ExcelCell(content: "01/02/2021"),
         ],
       ),
       ExcelRow(listCell: [
         ExcelCell.empty(),
         ExcelCell(content: "10%"),
-        ExcelCell(content: "10.020.000đ"),
-        ExcelCell(content: "18.890đ"),
+        ExcelCell(content: "6.000.000đ"),
+        ExcelCell(content: "10.000đ"),
         ExcelCell(content: "01/02/2021"),
       ]),
     ]);
     final excelRow2 = ExcelRow(listCell: [
-      ExcelCell(content: "SSIBF", align: TextAlign.start),
+      ExcelCell(content: "Row 2", align: TextAlign.start),
       ExcelCell(content: "10%"),
-      ExcelCell(content: "10.020.000đ"),
-      ExcelCell(content: "18.890đ"),
+      ExcelCell(content: "10.000.000đ"),
+      ExcelCell(content: "10.000đ"),
       ExcelCell(content: "01/02/2021"),
     ]);
 
@@ -73,18 +73,18 @@ class _MyAppState extends State<MyApp> {
                   lockedColumn: 1,
                   headers: const [
                     HeaderWidget(
-                      "Qũy",
+                      "Column 1",
                       alignment: Alignment.centerLeft,
                     ),
-                    HeaderWidget("Phân bổ"),
-                    HeaderWidget("Khớp lệnh"),
-                    HeaderWidget("Thực nhận"),
+                    HeaderWidget("Column 2"),
+                    HeaderWidget("Column 3"),
+                    HeaderWidget("Column 4"),
                     HeaderWidget(
-                      "Thời gian",
+                      "Column 5",
                       alignment: Alignment.centerRight,
                     )
                   ],
-                  minColumnsWidth: const [60, 70, 80, 80, 80],
+                  minColumnsWidth: const [80, 80, 80, 80, 80],
                 ),
               ),
             ),

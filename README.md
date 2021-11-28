@@ -1,18 +1,43 @@
 # excel_table
 
-A new flutter plugin project.
+A table widget.
 
-## Getting Started
+## Features 
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+* Lock cloums 
+* Scrollable rest
+* Effect when scroll
+* Row can expand sub row
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Supported platforms
 
-The plugin project was generated without specifying the `--platforms` flag, no platforms are currently supported.
-To add platforms, run `flutter create -t plugin --platforms <platforms> .` under the same
-directory. You can also find a detailed instruction on how to add platforms in the `pubspec.yaml` at https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms.
+* Flutter Android
+* Flutter iOS
+## Installation
+
+Add `excel_table: any` to your `pubspec.yaml` dependencies. And import it:
+
+```dart
+import 'package:excel_table/excel_table.dart';
+```
+
+## How to use
+
+Create your table data using
+ExcelCell
+ExcelRow
+ExcelData
+
+Simply create a `ExcelTable` widget, and pass the required params:
+
+```dart
+ExcelTable(
+  data: excelData,
+  headers: List<Widget> [],
+  minColumnsWidth: <double>[],
+)
+```
+See more on example project
+## License
+
+MIT
