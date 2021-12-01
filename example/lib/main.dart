@@ -85,6 +85,7 @@ class _MyAppState extends State<MyApp> {
                     )
                   ],
                   minColumnsWidth: const [80, 80, 80, 80, 80],
+                  padding: EdgeInsets.all(50),
                 ),
               ),
             ),

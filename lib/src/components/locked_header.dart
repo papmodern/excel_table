@@ -18,7 +18,9 @@ class LockedHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExcelHeaderWidget(
-        listHeaders: listHeaders.getRange(0, end),
-        columnWidth: columnWidth.getRange(0, end));
+      listHeaders: listHeaders.getRange(0, end),
+      columnWidth: columnWidth.getRange(0, end),
+      padding: padding,
+    );
   }
 }

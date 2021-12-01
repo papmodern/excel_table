@@ -33,6 +33,7 @@ class ScrollableExcelRowWidget extends StatelessWidget {
     final mainRow = ExcelRowWidget(
       listCell: row.listCell.getRange(start, end),
       columnWidth: colWidth,
+      padding: padding,
     );
     final divider = MainDivider(color: dividerColor, width: allWidth);
     return GestureDetector(

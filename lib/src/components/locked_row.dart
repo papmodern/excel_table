@@ -33,6 +33,7 @@ class LockedExcelRowWidget extends StatelessWidget {
     final mainRow = ExcelRowWidget(
       listCell: row.listCell.getRange(0, end),
       columnWidth: colWidth,
+      padding: padding,
     );
     final divider = MainDivider(color: dividerColor, width: allWidth);
     return GestureDetector(

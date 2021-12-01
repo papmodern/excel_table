@@ -19,7 +19,9 @@ class ScrollableHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final end = listHeaders.length;
     return ExcelHeaderWidget(
-        listHeaders: listHeaders.getRange(start, end),
-        columnWidth: columnWidth.getRange(start, end));
+      listHeaders: listHeaders.getRange(start, end),
+      columnWidth: columnWidth.getRange(start, end),
+      padding: padding,
+    );
   }
 }
