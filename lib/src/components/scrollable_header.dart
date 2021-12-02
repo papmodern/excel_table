@@ -8,12 +8,15 @@ class ScrollableHeaderWidget extends StatelessWidget {
   final EdgeInsets? padding;
   final int start;
 
+  final Color headerColor;
+
   const ScrollableHeaderWidget(
       {Key? key,
       required this.columnWidth,
       required this.listHeaders,
       this.padding,
-      required this.start})
+      required this.start,
+      required this.headerColor})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -22,6 +25,7 @@ class ScrollableHeaderWidget extends StatelessWidget {
       listHeaders: listHeaders.getRange(start, end),
       columnWidth: columnWidth.getRange(start, end),
       padding: padding,
+      backgroundColor: headerColor,
     );
   }
 }

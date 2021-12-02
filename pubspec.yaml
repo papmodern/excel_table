@@ -1,6 +1,6 @@
 name: excel_table
-description: A new flutter plugin project.
-version: 0.0.2
+description: A data table scrollable and expanding sub row
+version: 0.0.3
 repository: https://github.com/a313/excel_table
 
 environment:

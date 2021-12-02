@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
 
     data = ExcelData(
         listRow: [excelRow1, excelRow2],
-        initWidth: [120, null, null, null, null]);
+        initWidth: [80, null, null, null, null]);
   }
 
   @override
@@ -85,7 +85,50 @@ class _MyAppState extends State<MyApp> {
                     )
                   ],
                   minColumnsWidth: const [80, 80, 80, 80, 80],
-                  padding: EdgeInsets.all(50),
+                  padding: const EdgeInsets.all(16),
+                  lockedDivider: (context, width) => Container(
+                    color: Colors.amber,
+                    height: 0.5,
+                    width: width,
+                  ),
+                  scrollableDivider: (context, width) => Container(
+                    color: Colors.green,
+                    height: 0.5,
+                    width: width,
+                  ),
+                  onRightEffect: (context, atRight) => Visibility(
+                    visible: !atRight,
+                    child: IgnorePointer(
+                      ignoring: true,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [Colors.red, Colors.transparent],
+                        )),
+                        width: 10,
+                      ),
+                    ),
+                  ),
+                  onLeftEffect: (context, atLeft) => Visibility(
+                    visible: !atLeft,
+                    child: IgnorePointer(
+                      ignoring: true,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            Color(0x00FFFFFF),
+                            Colors.black,
+                          ],
+                        )),
+                        width: 20,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -110,7 +153,6 @@ class HeaderWidget extends StatelessWidget {
     return Container(
       height: 44,
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 4.0),
-      color: const Color(0xFF00B14F),
       child: Align(
         alignment: alignment,
         child: Text(

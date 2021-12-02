@@ -16,7 +16,7 @@ class ExcelCell {
           'Need atleast child or content on Excel Object',
         );
   factory ExcelCell.empty() {
-    return ExcelCell(child: const SizedBox());
+    return ExcelCell(content: ' ');
   }
 }
 

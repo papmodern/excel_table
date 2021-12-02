@@ -7,19 +7,20 @@ import 'row_widget.dart';
 class ScrollableExcelRowWidget extends StatelessWidget {
   const ScrollableExcelRowWidget({
     Key? key,
-    required this.row,
     required this.columnWidth,
+    required this.row,
     this.start = 0,
-    this.onTapped,
     this.padding,
-    this.dividerColor,
+    this.onTapped,
+    this.scrollableDivider,
   }) : super(key: key);
   final List<double> columnWidth;
   final ExcelRow row;
   final int start;
-  final Color? dividerColor;
+
   final EdgeInsets? padding;
   final Function(ExcelRow)? onTapped;
+  final Widget Function(BuildContext, double)? scrollableDivider;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,8 @@ class ScrollableExcelRowWidget extends StatelessWidget {
       columnWidth: colWidth,
       padding: padding,
     );
-    final divider = MainDivider(color: dividerColor, width: allWidth);
+    final divider = scrollableDivider?.call(context, allWidth) ??
+        MainDivider(width: allWidth);
     return GestureDetector(
       onTap: () => onTapped?.call(row),
       child: showSubRow

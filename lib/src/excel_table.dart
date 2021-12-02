@@ -15,7 +15,13 @@ class ExcelTable extends StatefulWidget {
   final ScrollController? scrollController;
   final TextStyle? headerStyle;
   final EdgeInsets? padding;
-  final Color? dividerColor;
+  final Color headerBackgroudColor;
+
+  final Widget Function(BuildContext context, double width)? lockedDivider;
+  final Widget Function(BuildContext context, double width)? scrollableDivider;
+  final Widget Function(BuildContext context, bool atRight)? onRightEffect;
+  final Widget Function(BuildContext, bool atLeft)? onLeftEffect;
+
   const ExcelTable({
     Key? key,
     required this.data,
@@ -25,7 +31,11 @@ class ExcelTable extends StatefulWidget {
     this.scrollController,
     this.headerStyle,
     this.padding,
-    this.dividerColor,
+    this.lockedDivider,
+    this.scrollableDivider,
+    this.onRightEffect,
+    this.onLeftEffect,
+    this.headerBackgroudColor = Colors.blue,
   }) : super(key: key);
 
   @override
@@ -92,6 +102,7 @@ class _ExcelTableState extends State<ExcelTable> {
                   columnWidth: columnWidth,
                   padding: widget.padding,
                   onTapped: (row) => _onTappedRow(row),
+                  lockedDivider: widget.lockedDivider,
                 );
               })
                 ..insert(
@@ -101,6 +112,7 @@ class _ExcelTableState extends State<ExcelTable> {
                       columnWidth: columnWidth,
                       padding: widget.padding,
                       end: lockedColumn,
+                      headerColor: widget.headerBackgroudColor,
                     )),
             ),
           ),
@@ -128,6 +140,7 @@ class _ExcelTableState extends State<ExcelTable> {
                             start: lockedColumn,
                             columnWidth: columnWidth,
                             padding: widget.padding,
+                            scrollableDivider: widget.scrollableDivider,
                             onTapped: (row) => _onTappedRow(row),
                           );
                         })
@@ -138,6 +151,7 @@ class _ExcelTableState extends State<ExcelTable> {
                                 columnWidth: columnWidth,
                                 padding: widget.padding,
                                 start: lockedColumn,
+                                headerColor: widget.headerBackgroudColor,
                               )),
                       ),
                     ),
@@ -148,44 +162,17 @@ class _ExcelTableState extends State<ExcelTable> {
                 left: 0,
                 top: 0,
                 bottom: 12,
-                child: Visibility(
-                  visible: !atTop,
-                  child: IgnorePointer(
-                    ignoring: true,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [Colors.black26, Colors.transparent],
-                      )),
-                      width: 10,
-                    ),
-                  ),
-                ),
+                child: widget.onRightEffect != null
+                    ? widget.onRightEffect!.call(context, atTop)
+                    : _TopEffect(atTop: atTop),
               ),
               Positioned(
                   right: 0,
                   top: 0,
                   bottom: 12,
-                  child: Visibility(
-                    visible: !atBottom,
-                    child: IgnorePointer(
-                      ignoring: true,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            Color(0x00FFFFFF),
-                            Colors.white54,
-                          ],
-                        )),
-                        width: 20,
-                      ),
-                    ),
-                  ))
+                  child: widget.onLeftEffect != null
+                      ? widget.onLeftEffect!.call(context, atBottom)
+                      : _BottomEffect(atBottom: atBottom))
             ],
           ),
         ),
@@ -220,5 +207,64 @@ class _ExcelTableState extends State<ExcelTable> {
         });
       }
     }
+  }
+}
+
+class _BottomEffect extends StatelessWidget {
+  const _BottomEffect({
+    Key? key,
+    required this.atBottom,
+  }) : super(key: key);
+
+  final bool atBottom;
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: !atBottom,
+      child: IgnorePointer(
+        ignoring: true,
+        child: Container(
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Color(0x00FFFFFF),
+              Colors.white54,
+            ],
+          )),
+          width: 20,
+        ),
+      ),
+    );
+  }
+}
+
+class _TopEffect extends StatelessWidget {
+  const _TopEffect({
+    Key? key,
+    required this.atTop,
+  }) : super(key: key);
+
+  final bool atTop;
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: !atTop,
+      child: IgnorePointer(
+        ignoring: true,
+        child: Container(
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [Colors.black26, Colors.transparent],
+          )),
+          width: 10,
+        ),
+      ),
+    );
   }
 }

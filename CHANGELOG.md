@@ -5,3 +5,7 @@
 ## 0.0.2
 
 * Fixed bug padding.
+
+## 0.0.3
+
+* Give more features.
