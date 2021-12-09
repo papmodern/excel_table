@@ -129,6 +129,23 @@ class _MyAppState extends State<MyApp> {
                       ),
                     ),
                   ),
+                  footerBuilder: (context) => Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 10,
+                        color: Colors.red,
+                      ),
+                      Center(
+                        child: Text('Footer'),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: 30,
+                        color: Colors.green,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

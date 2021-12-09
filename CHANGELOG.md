@@ -9,3 +9,7 @@
 ## 0.0.3
 
 * Give more features.
+
+## 0.0.4
+
+* Add table footer builder.
