@@ -10,5 +10,7 @@
 
 * Give more features.
 ## 0.0.4
-
+* Add table footer builder.
+## 0.0.5
 * Add empty cell builder.
+

@@ -1,6 +1,6 @@
 name: excel_table
 description: A data table scrollable and expanding sub row
-version: 0.0.4
+version: 0.0.5
 repository: https://github.com/a313/excel_table
 
 environment:
