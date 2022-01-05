@@ -8,9 +8,11 @@ class ExcelRowWidget extends StatelessWidget {
     required this.listCell,
     required this.columnWidth,
     this.padding,
+    this.emptyCellBuilder,
   }) : super(key: key);
   final Iterable<double> columnWidth;
   final Iterable<ExcelCell> listCell;
+  final WidgetBuilder? emptyCellBuilder;
   final EdgeInsets? padding;
 
   @override
@@ -25,14 +27,17 @@ class ExcelRowWidget extends StatelessWidget {
           child: SizedBox(
             width: width,
             child: cell.child ??
-                Text(
-                  cell.content!,
-                  textAlign: cell.align,
-                  style: cell.style,
-                ),
+                contentWidget(cell) ??
+                emptyCellBuilder?.call(context),
           ),
         );
       }),
     );
+  }
+
+  Widget? contentWidget(ExcelCell cell) {
+    final content = cell.content;
+    if (content == null) return null;
+    return Text(content, textAlign: cell.align, style: cell.style);
   }
 }

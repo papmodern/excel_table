@@ -17,10 +17,21 @@ class ExcelTable extends StatefulWidget {
   final EdgeInsets? padding;
   final Color headerBackgroudColor;
 
+  /// Add a divider widget on each row of locked area
   final Widget Function(BuildContext context, double width)? lockedDivider;
+
+  /// Add a divider widget on each row of scroll area
   final Widget Function(BuildContext context, double width)? scrollableDivider;
+
+  /// Add an effect on the right of the scroll area
   final Widget Function(BuildContext context, bool atRight)? onRightEffect;
+
+  /// Add an effect on the left of the scroll area
   final Widget Function(BuildContext, bool atLeft)? onLeftEffect;
+
+  /// Add widget builder for empty cell
+  /// If it is null and default return a sizebox
+  final WidgetBuilder? emptyCellBuilder;
 
   const ExcelTable({
     Key? key,
@@ -36,6 +47,7 @@ class ExcelTable extends StatefulWidget {
     this.onRightEffect,
     this.onLeftEffect,
     this.headerBackgroudColor = Colors.blue,
+    this.emptyCellBuilder,
   }) : super(key: key);
 
   @override
@@ -96,6 +108,7 @@ class _ExcelTableState extends State<ExcelTable> {
               mainAxisSize: MainAxisSize.min,
               children: List.generate(rowLength, (index) {
                 final excelRow = widget.data.listRow[index];
+
                 return LockedExcelRowWidget(
                   row: excelRow,
                   end: lockedColumn,
@@ -142,6 +155,7 @@ class _ExcelTableState extends State<ExcelTable> {
                             padding: widget.padding,
                             scrollableDivider: widget.scrollableDivider,
                             onTapped: (row) => _onTappedRow(row),
+                            emptyCellBuilder: widget.emptyCellBuilder,
                           );
                         })
                           ..insert(

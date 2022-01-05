@@ -1,6 +1,6 @@
 # excel_table
 
-A table widget.
+A table widget scrollable when not enough width space, can set locked column like microsoft excel
 
 ## Features 
 

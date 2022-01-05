@@ -13,6 +13,7 @@ class ScrollableExcelRowWidget extends StatelessWidget {
     this.padding,
     this.onTapped,
     this.scrollableDivider,
+    this.emptyCellBuilder,
   }) : super(key: key);
   final List<double> columnWidth;
   final ExcelRow row;
@@ -21,6 +22,7 @@ class ScrollableExcelRowWidget extends StatelessWidget {
   final EdgeInsets? padding;
   final Function(ExcelRow)? onTapped;
   final Widget Function(BuildContext, double)? scrollableDivider;
+  final WidgetBuilder? emptyCellBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +37,12 @@ class ScrollableExcelRowWidget extends StatelessWidget {
       listCell: row.listCell.getRange(start, end),
       columnWidth: colWidth,
       padding: padding,
+      emptyCellBuilder: emptyCellBuilder,
     );
     final divider = scrollableDivider?.call(context, allWidth) ??
         MainDivider(width: allWidth);
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       onTap: () => onTapped?.call(row),
       child: showSubRow
           ? Column(
@@ -49,6 +53,7 @@ class ScrollableExcelRowWidget extends StatelessWidget {
                             listSubRow[index].listCell.getRange(start, end),
                         columnWidth: colWidth,
                         padding: padding,
+                        emptyCellBuilder: emptyCellBuilder,
                       ))
                 ..add(divider)
                 ..insert(0, mainRow),

@@ -20,34 +20,34 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     final excelRow1 = ExcelRow(listCell: [
       ExcelCell(content: "Row 1", align: TextAlign.start),
-      ExcelCell(content: "40%"),
-      ExcelCell(content: "10.000.000"),
-      ExcelCell(content: "10.000"),
-      ExcelCell(content: "01/02/2021"),
+      ExcelCell.empty(),
+      ExcelCell.empty(),
+      ExcelCell(content: "30%"),
+      ExcelCell.empty(),
     ], listSubRow: [
       ExcelRow(
         listCell: [
-          ExcelCell.empty(),
+          ExcelCell(content: ''),
           ExcelCell(content: "30%"),
-          ExcelCell(content: "4.000.000"),
+          ExcelCell.empty(),
           ExcelCell(content: "10.000"),
-          ExcelCell(content: "01/02/2021"),
+          ExcelCell.empty(),
         ],
       ),
       ExcelRow(listCell: [
-        ExcelCell.empty(),
+        ExcelCell(content: ''),
         ExcelCell(content: "10%"),
-        ExcelCell(content: "6.000.000đ"),
+        ExcelCell.empty(),
         ExcelCell(content: "10.000đ"),
-        ExcelCell(content: "01/02/2021"),
+        ExcelCell.empty(),
       ]),
     ]);
     final excelRow2 = ExcelRow(listCell: [
       ExcelCell(content: "Row 2", align: TextAlign.start),
       ExcelCell(content: "10%"),
-      ExcelCell(content: "10.000.000đ"),
+      ExcelCell.empty(),
       ExcelCell(content: "10.000đ"),
-      ExcelCell(content: "01/02/2021"),
+      ExcelCell.empty(),
     ]);
 
     data = ExcelData(
@@ -129,6 +129,7 @@ class _MyAppState extends State<MyApp> {
                       ),
                     ),
                   ),
+                  emptyCellBuilder: (context) => const Divider(),
                 ),
               ),
             ),

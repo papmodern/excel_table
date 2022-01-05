@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'extension.dart';
 
+///Contains the information of each cell
 class ExcelCell {
   Widget? child;
   String? content;
@@ -11,15 +12,15 @@ class ExcelCell {
     this.content,
     this.style,
     this.align = TextAlign.center,
-  }) : assert(
-          (child == null || content == null),
-          'Need atleast child or content on Excel Object',
-        );
+  });
   factory ExcelCell.empty() {
-    return ExcelCell(content: ' ');
+    return ExcelCell();
   }
 }
 
+///Contains the information of each row
+///list cell contain all main cells
+///list sub row contain all sub rows
 class ExcelRow {
   List<ExcelCell> listCell;
   List<ExcelRow>? listSubRow;
@@ -31,6 +32,9 @@ class ExcelRow {
   });
 }
 
+///Contains the information of all table
+///init width is the minimun with of each column
+///can automatic caculate with null value
 class ExcelData {
   List<ExcelRow> listRow;
   List<double?> initWidth;
@@ -77,7 +81,8 @@ class ExcelData {
 
 double getCellWidth(ExcelCell cell) {
   final content = cell.content;
+  if (content == null) return 0.0;
   final style = cell.style;
-  assert(content != null, 'Widget child is not support for dynamic with');
-  return content!.textSize(style).width;
+
+  return content.textSize(style).width;
 }
