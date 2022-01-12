@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:excel_table/excel_table.dart';
+import 'package:flutter/material.dart';
+import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
 import 'components/locked_header.dart';
 import 'components/locked_row.dart';
@@ -60,12 +61,17 @@ class ExcelTable extends StatefulWidget {
 class _ExcelTableState extends State<ExcelTable> {
   late List<double> columnWidth;
   late ScrollController scrollController;
+  late ScrollController headScrollController;
   bool atBottom = false, atTop = true;
+
+  late LinkedScrollControllerGroup _controllers;
 
   @override
   void initState() {
+    _controllers = LinkedScrollControllerGroup();
+    scrollController = widget.scrollController ?? _controllers.addAndGet();
+    headScrollController = _controllers.addAndGet();
     columnWidth = _getColWith();
-    scrollController = widget.scrollController ?? ScrollController();
     scrollController.addListener(() => onScroll());
     super.initState();
   }
@@ -79,6 +85,7 @@ class _ExcelTableState extends State<ExcelTable> {
   @override
   void dispose() {
     scrollController.dispose();
+    headScrollController.dispose();
     super.dispose();
   }
 
@@ -102,107 +109,108 @@ class _ExcelTableState extends State<ExcelTable> {
   Widget build(BuildContext context) {
     final rowLength = widget.data.listRow.length;
     final lockedColumn = widget.lockedColumn;
-    return Stack(
-      children: [
-        Column(
-          children: [
-            Row(
-              children: [
-                if (lockedColumn > 0)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(rowLength, (index) {
-                        final excelRow = widget.data.listRow[index];
-                        return LockedExcelRowWidget(
-                          row: excelRow,
-                          end: lockedColumn,
-                          columnWidth: columnWidth,
-                          padding: widget.padding,
-                          onTapped: (row) => _onTappedRow(row),
-                          lockedDivider: widget.lockedDivider,
-                        );
-                      })
-                        ..insert(
-                            0,
-                            LockedHeaderWidget(
-                              listHeaders: widget.headers,
-                              columnWidth: columnWidth,
-                              padding: widget.padding,
-                              end: lockedColumn,
-                              headerColor: widget.headerBackgroudColor,
-                            )),
-                    ),
-                  ),
-                Expanded(
-                  child: Stack(
+    return CustomScrollView(
+      slivers: [
+        SliverPersistentHeader(
+          delegate: MyHeader(
+            widget,
+            columnWidth,
+            lockedColumn,
+            headScrollController,
+          ),
+          floating: true,
+          pinned: true,
+        ),
+        SliverToBoxAdapter(
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  Row(
                     children: [
-                      MediaQuery.removePadding(
-                        context: context,
-                        removeBottom: true,
-                        child: Scrollbar(
-                          controller: scrollController,
-                          isAlwaysShown: true,
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              physics: const ClampingScrollPhysics(),
-                              controller: scrollController,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: List.generate(rowLength, (index) {
-                                  final excelRow = widget.data.listRow[index];
-                                  return ScrollableExcelRowWidget(
-                                    row: excelRow,
-                                    start: lockedColumn,
-                                    columnWidth: columnWidth,
-                                    padding: widget.padding,
-                                    scrollableDivider: widget.scrollableDivider,
-                                    emptyCellBuilder: widget.emptyCellBuilder,
-                                    onTapped: (row) => _onTappedRow(row),
-                                  );
-                                })
-                                  ..insert(
-                                      0,
-                                      ScrollableHeaderWidget(
-                                        listHeaders: widget.headers,
-                                        columnWidth: columnWidth,
-                                        padding: widget.padding,
-                                        start: lockedColumn,
-                                        headerColor:
-                                            widget.headerBackgroudColor,
-                                      )),
-                              ),
-                            ),
+                      if (lockedColumn > 0)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: List.generate(rowLength, (index) {
+                              final excelRow = widget.data.listRow[index];
+                              return LockedExcelRowWidget(
+                                row: excelRow,
+                                end: lockedColumn,
+                                columnWidth: columnWidth,
+                                padding: widget.padding,
+                                onTapped: (row) => _onTappedRow(row),
+                                lockedDivider: widget.lockedDivider,
+                              );
+                            }),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        bottom: 12,
-                        child: widget.onRightEffect != null
-                            ? widget.onRightEffect!.call(context, atTop)
-                            : _TopEffect(atTop: atTop),
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            MediaQuery.removePadding(
+                              context: context,
+                              removeBottom: true,
+                              child: Scrollbar(
+                                controller: scrollController,
+                                isAlwaysShown: true,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    physics: const ClampingScrollPhysics(),
+                                    controller: scrollController,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children:
+                                          List.generate(rowLength, (index) {
+                                        final excelRow =
+                                            widget.data.listRow[index];
+                                        return ScrollableExcelRowWidget(
+                                          row: excelRow,
+                                          start: lockedColumn,
+                                          columnWidth: columnWidth,
+                                          padding: widget.padding,
+                                          scrollableDivider:
+                                              widget.scrollableDivider,
+                                          emptyCellBuilder:
+                                              widget.emptyCellBuilder,
+                                          onTapped: (row) => _onTappedRow(row),
+                                        );
+                                      }),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              top: 0,
+                              bottom: 12,
+                              child: widget.onRightEffect != null
+                                  ? widget.onRightEffect!.call(context, atTop)
+                                  : _TopEffect(atTop: atTop),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            if (widget.footerBuilder != null)
-              widget.footerBuilder!.call(context),
-          ],
-        ),
-        Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            child: widget.onLeftEffect != null
-                ? widget.onLeftEffect!.call(context, atBottom)
-                : _BottomEffect(atBottom: atBottom))
+                  if (widget.footerBuilder != null)
+                    widget.footerBuilder!.call(context),
+                ],
+              ),
+              Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: widget.onLeftEffect != null
+                      ? widget.onLeftEffect!.call(context, atBottom)
+                      : _BottomEffect(atBottom: atBottom))
+            ],
+          ),
+        )
       ],
     );
   }
@@ -234,6 +242,62 @@ class _ExcelTableState extends State<ExcelTable> {
         });
       }
     }
+  }
+}
+
+class MyHeader extends SliverPersistentHeaderDelegate {
+  final ExcelTable widget;
+  final List<double> columnWidth;
+  final int lockedColumn;
+  final ScrollController scrollController;
+
+  MyHeader(
+    this.widget,
+    this.columnWidth,
+    this.lockedColumn,
+    this.scrollController,
+  );
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Row(
+      children: [
+        LockedHeaderWidget(
+          listHeaders: widget.headers,
+          columnWidth: columnWidth,
+          padding: widget.padding,
+          end: lockedColumn,
+          headerColor: widget.headerBackgroudColor,
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            controller: scrollController,
+            scrollDirection: Axis.horizontal,
+            child: ScrollableHeaderWidget(
+              listHeaders: widget.headers,
+              columnWidth: columnWidth,
+              padding: widget.padding,
+              start: lockedColumn,
+              headerColor: widget.headerBackgroudColor,
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  @override
+  // TODO: implement maxExtent
+  double get maxExtent => 40;
+
+  @override
+  // TODO: implement minExtent
+  double get minExtent => 40;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
   }
 }
 
